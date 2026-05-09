@@ -90,14 +90,18 @@ namespace Seralyth.Menu
             InitializeFonts();
             activeFont = AgencyFB;
 
+#if LEGAL || LEGAL_DEBUG
+            // "illegal" seralyth -> "legal" seralyth preferences merge here
+#else
             if (Bootstrapper.FirstLaunch && Directory.Exists("iisStupidMenu"))
                 Prompt("It seems like you have used ii's Stupid Menu before! Would you like to move all your enabled mods, settings and sounds to Seralyth Menu?", Settings.MergePreferences_iisStupidMenu);
-
+#endif
             //if (Plugin.FirstLaunch)
             //    Prompt("It seems like this is your first time using the menu. Would you like to watch a quick tutorial to get to know how to use it?", Settings.ShowTutorial);
             //else
             //    acceptedDonations = File.Exists($"{PluginInfo.BaseDirectory}/Seralyth_HideDonationButton.txt");
-
+            if (!Bootstrapper.FirstLaunch)
+                acceptedDonations = File.Exists($"{PluginInfo.BaseDirectory}/Seralyth_HideDonationButton.txt");
 
             NetworkSystem.Instance.OnJoinedRoomEvent += OnJoinRoom;
             NetworkSystem.Instance.OnReturnedToSinglePlayer += OnLeaveRoom;
@@ -1866,6 +1870,14 @@ namespace Seralyth.Menu
 
         private static void AddButton(float offset, int buttonIndex, ButtonInfo method)
         {
+            bool shouldCreate = false;
+            #if LEGAL || LEGAL_DEBUG
+            shouldCreate = method.legal;
+            #else
+            shouldCreate = true;
+            #endif
+            if (!shouldCreate)
+                return;
             if (!method.label)
             {
                 GameObject buttonObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -1946,7 +1958,6 @@ namespace Seralyth.Menu
 
                 FollowMenuSettings(buttonObject, shouldSwap ? method.enabled : !method.enabled);
             }
-
             TextMeshPro buttonText = new GameObject
             {
                 transform = { parent = canvasObj.transform }
@@ -1954,7 +1965,7 @@ namespace Seralyth.Menu
 
             UpdateButtonText updater = buttonText.gameObject.AddComponent<UpdateButtonText>();
             updater.Init(method, buttonIndex, offset);
-            updater.UpdateText();
+            updater.UpdateText(); 
         }
 
         private static void AddSearchButton()
@@ -2573,7 +2584,6 @@ namespace Seralyth.Menu
             }
 
             FollowMenuSettings(menuBackground, false);
-            //}
 
             canvasObj = new GameObject();
             canvasObj.transform.parent = menu.transform;
@@ -2679,7 +2689,16 @@ namespace Seralyth.Menu
                     }
                 }.AddComponent<TextMeshPro>();
                 buildLabel.font = activeFont;
+                
+                #if LEGAL
+                buildLabel.text = $"Build {PluginInfo.Version} Legal";
+                #elif DEBUG
+                buildLabel.text = $"Build {PluginInfo.Version} Debug";
+                #elif LEGAL_DEBUG
+                buildLabel.text = $"Build {PluginInfo.Version} Legal, Debug";
+                #else
                 buildLabel.text = $"Build {PluginInfo.Version}";
+                #endif
 
                 buildLabel.text = FollowMenuSettings(buildLabel.text);
 
@@ -2985,6 +3004,23 @@ namespace Seralyth.Menu
                                 renderButtons = Buttons.buttons[Buttons.CurrentCategoryIndex];
                                 break;
                         }
+
+                    #if LEGAL || LEGAL_DEBUG
+                    renderButtons = renderButtons.Where(b => b.legal || b.label).ToArray();
+                    #endif
+
+                    if (renderButtons.Length == 0 || (renderButtons.Length == 1 && renderButtons.FirstOrDefault().toolTip.Contains("Returns you back to the")))
+                    {
+                        renderButtons = renderButtons.AddToArray(
+                            new ButtonInfo
+                            {
+                                buttonText = "This category doesn't seem to have any buttons.",
+                                legal = true,
+                                label = true
+                            }
+                        );
+                    }
+
 
                     if (Buttons.GetIndex("Alphabetize Menu").enabled || isSearching)
                         renderButtons = StringsToInfos(Alphabetize(InfosToStrings(renderButtons)));
@@ -6604,7 +6640,8 @@ jgs \_   _/ |Oo\
         {
             get
             {
-                int count = Buttons.buttons[Buttons.CurrentCategoryIndex].Length;
+                ButtonInfo[] list = Buttons.buttons[Buttons.CurrentCategoryIndex];
+                int count = list.Length;
 
                 if (Buttons.CurrentCategoryName == "Favorite Mods")
                     count = favorites.Count;
@@ -6638,6 +6675,11 @@ jgs \_   _/ |Oo\
                             count--;
                     }
                 }
+
+                #if LEGAL || LEGAL_DEBUG
+                list = list.Where(b => b.legal || b.label).ToArray();
+                count = list.Length;
+                #endif
 
                 if (!isSearching) return count;
                 {
@@ -6957,7 +6999,7 @@ jgs \_   _/ |Oo\
         public static bool fpsCountTimed;
         public static bool fpsCountAverage;
         public static bool ftCount;
-        //public static bool acceptedDonations;
+        public static bool acceptedDonations;
         public static float lastDeltaTime = 1f;
         public static TextMeshPro keyboardInputObject;
         public static TextMeshPro title;

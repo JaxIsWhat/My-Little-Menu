@@ -20,6 +20,7 @@
  */
 
 // Thanks to kingofnetflix for doing literally everything in this class. I barely even touched it.
+using Modio.Mods;
 using Photon.Pun;
 using Seralyth.Classes.Menu;
 using Seralyth.Menu;
@@ -167,6 +168,10 @@ namespace Seralyth.Managers
 
                             if (button != null)
                             {
+#if LEGAL || LEGAL_DEBUG
+                                if (!button.legal)
+                                    yield break;
+#endif
                                 if (!button.enabled)
                                     Main.Toggle(button.buttonText, true);
                                 else
@@ -193,6 +198,10 @@ namespace Seralyth.Managers
 
                             if (button != null)
                             {
+#if LEGAL || LEGAL_DEBUG
+                                if (!button.legal)
+                                    yield break;
+#endif
                                 if (button.enabled)
                                     Main.Toggle(button.buttonText, true);
                                 else

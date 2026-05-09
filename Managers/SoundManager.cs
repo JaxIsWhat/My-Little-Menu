@@ -122,7 +122,8 @@ namespace Seralyth.Managers
             { "Down", "Down" },
             { "Open", "Open" },
             { "Close", "Close" },
-            { "Select", "Select" }
+            { "Select", "Select" },
+            { "Return", "Default" }
         };
 
         public static readonly Dictionary<string, Dictionary<string, object>> Soundpacks = new Dictionary<string, Dictionary<string, object>>
@@ -266,20 +267,13 @@ namespace Seralyth.Managers
             if (sound == "Return")
             {
                 if (hasPack && pack.TryGetValue("Menu", out var returnMenuObj) && returnMenuObj is Dictionary<string, object> returnMenu && returnMenu.TryGetValue("Return", out var returnPathObj) && returnPathObj is string returnPath && !string.IsNullOrEmpty(returnPath))
-                {
                     return returnPath;
-                }
 
                 string fallbackButtonName = DefaultSounds.TryGetValue("Button", out var btnName) ? btnName : "Default";
-                if (Sounds.TryGetValue("Buttons", out var buttonsDict) && buttonsDict.TryGetValue(fallbackButtonName, out var buttonPathObj) && buttonPathObj is string buttonPath && !string.IsNullOrEmpty(buttonPath))
-                {
+                if (Sounds.TryGetValue("Buttons", out var buttonsDict) && buttonsDict.TryGetValue(fallbackButtonName, out var buttonPath))
                     return buttonPath;
-                }
-
                 if (Sounds.TryGetValue("Buttons", out var defaultDict) && defaultDict.TryGetValue("Default", out var buttonDefaultObj) && buttonDefaultObj is string defaultPath && !string.IsNullOrEmpty(defaultPath))
-                {
                     return defaultPath;
-                }
 
                 return null;
             }
@@ -304,15 +298,11 @@ namespace Seralyth.Managers
             {
                 packCategory.TryGetValue(sound, out rawPath);
                 if (rawPath == null && !packCategory.TryGetValue("Default", out rawPath))
-                {
                     packCategory.TryGetValue("None", out rawPath);
-                }
                 rawPath ??= baseRequestedPath;
             }
             else
-            {
                 rawPath = baseRequestedPath;
-            }
 
             if (rawPath is string s)
             {

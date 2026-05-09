@@ -330,8 +330,8 @@ namespace Seralyth.Mods
                 .Aggregate("", (current, line) => current + (Environment.NewLine + "echo      " + line));
 
             string restartScript = @"@echo off
-title Seralyth Menu
-color 0E
+title Seralyth Menu - Restarting Gorilla Tag
+color 5
 
 cls
 echo." + logoLines + @"

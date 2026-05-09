@@ -310,6 +310,9 @@ namespace Seralyth.Menu
                     {
                         try
                         {
+                            if (Buttons.buttons[Buttons.GetCategory("Temporary Category")].Contains(button) || button.hideFromArraylist)
+                                continue;
+
                             if (!button.enabled || (hideSettings && (!hideSettings ||
                                                                      Buttons.categoryNames[categoryIndex]
                                                                          .Contains("Settings")))) continue;

@@ -64,7 +64,8 @@ namespace Seralyth.Managers
                     new ButtonInfo
                     {
                         buttonText = "You have no achievements.",
-                        label = true
+                        label = true,
+                        legal = true
                     });
             else
                 for (int i = 0; i < achievementCount; i++)
@@ -77,7 +78,8 @@ namespace Seralyth.Managers
                             overlapText = achievement.name,
                             method = () => PromptSingle($"{achievement.description}<{PluginInfo.ServerResourcePath}/{achievement.icon}>", null, "Done"),
                             isTogglable = false,
-                            toolTip = achievement.description
+                            toolTip = achievement.description,
+                            legal = true
                         });
                 }
 

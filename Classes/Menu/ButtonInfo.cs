@@ -41,9 +41,12 @@ namespace Seralyth.Classes.Menu
         public bool enabled;
         public bool isTogglable = true;
 
+        public bool hideFromArraylist;
         public bool label;
         public bool incremental;
         public bool detected;
+
+        public bool legal;
 
         public string customBind;
         public string rebindKey;

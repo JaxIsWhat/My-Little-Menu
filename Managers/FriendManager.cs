@@ -1009,7 +1009,8 @@ namespace Seralyth.Managers
                     buttonText = "Exit Friends",
                     method =() => Buttons.CurrentCategoryName = "Main",
                     isTogglable = false,
-                    toolTip = "Returns you back to the main page."
+                    toolTip = "Returns you back to the main page.",
+                    legal = true
                 }
             };
 
@@ -1019,7 +1020,8 @@ namespace Seralyth.Managers
                 overlapText = friend.currentName + (friend.online ? " <color=grey>[</color><color=green>Online</color><color=grey>]</color>" : " <color=grey>[</color><color=red>Offline</color><color=grey>]</color>"),
                 method = () => InspectFriend(instance.Friends.friends.FirstOrDefault(x => x.Value == friend).Key),
                 isTogglable = false,
-                toolTip = $"See information on your friend {friend.currentName}."
+                toolTip = $"See information on your friend {friend.currentName}.",
+                legal = true
             }));
 
             buttons.Add(new ButtonInfo
@@ -1027,7 +1029,8 @@ namespace Seralyth.Managers
                 buttonText = "Add Friends",
                 method = AddFriendsUI,
                 isTogglable = false,
-                toolTip = "Use this tab to add people as friends."
+                toolTip = "Use this tab to add people as friends.",
+                legal = true
             });
 
             Buttons.buttons[Buttons.GetCategory("Friends")] = buttons.ToArray();
@@ -1040,7 +1043,8 @@ namespace Seralyth.Managers
                     buttonText = "Return to Friends",
                     method =() => Buttons.CurrentCategoryName = "Friends",
                     isTogglable = false,
-                    toolTip = "Returns you back to the friends page."
+                    toolTip = "Returns you back to the friends page.",
+                    legal = true
                 },
 
                 new ButtonInfo {
@@ -1048,7 +1052,8 @@ namespace Seralyth.Managers
                     overlapText = $"Incoming Friend Requests{(instance.Friends.incoming.Count > 0 ? $" <color=grey>[</color><color=green>{instance.Friends.incoming.Count}</color><color=grey>]</color>" : " ")}",
                     method = IncomingFriendRequests,
                     isTogglable = false,
-                    toolTip = "Shows your current incoming friend requests."
+                    toolTip = "Shows your current incoming friend requests.",
+                    legal = true
                 },
 
                 new ButtonInfo {
@@ -1056,7 +1061,8 @@ namespace Seralyth.Managers
                     overlapText = $"Outgoing Friend Requests{(instance.Friends.outgoing.Count > 0 ? $" <color=grey>[</color><color=green>{instance.Friends.outgoing.Count}</color><color=grey>]</color>" : " ")}",
                     method = OutgoingFriendRequests,
                     isTogglable = false,
-                    toolTip = "Shows your current outgoing friend requests."
+                    toolTip = "Shows your current outgoing friend requests.",
+                    legal = true
                 }
             };
 
@@ -1066,7 +1072,8 @@ namespace Seralyth.Managers
                 buttons.Add(new ButtonInfo
                 {
                     buttonText = "Not in a Room",
-                    label = true
+                    label = true,
+                    legal = true
                 });
 
             Buttons.buttons[Buttons.GetCategory("Temporary Category")] = buttons.ToArray();
@@ -1081,7 +1088,8 @@ namespace Seralyth.Managers
                     buttonText = "Return to Add Friends",
                     method = AddFriendsUI,
                     isTogglable = false,
-                    toolTip = "Returns you back to the add friends page."
+                    toolTip = "Returns you back to the add friends page.",
+                    legal = true
                 }
             };
 
@@ -1095,7 +1103,8 @@ namespace Seralyth.Managers
                 overlapText = friend.currentName,
                 method = () => InspectPendingFriend(instance.Friends.incoming.FirstOrDefault(x => x.Value == friend).Key),
                 isTogglable = false,
-                toolTip = $"Inspect {friend.currentName}'s friend request."
+                toolTip = $"Inspect {friend.currentName}'s friend request.",
+                legal = true
             }));
 
             Buttons.buttons[Buttons.GetCategory("Temporary Category")] = buttons.ToArray();
@@ -1110,7 +1119,8 @@ namespace Seralyth.Managers
                     buttonText = "Return to Add Friends",
                     method = AddFriendsUI,
                     isTogglable = false,
-                    toolTip = "Returns you back to the add friends page."
+                    toolTip = "Returns you back to the add friends page.",
+                    legal = true
                 }
             };
 
@@ -1124,7 +1134,8 @@ namespace Seralyth.Managers
                 overlapText = friend.currentName,
                 method = () => CancelFriendRequest(instance.Friends.outgoing.FirstOrDefault(x => x.Value == friend).Key),
                 isTogglable = false,
-                toolTip = $"Cancels {friend.currentName}'s friend request."
+                toolTip = $"Cancels {friend.currentName}'s friend request.",
+                legal = true
             }));
 
             Buttons.buttons[Buttons.GetCategory("Temporary Category")] = buttons.ToArray();
@@ -1140,7 +1151,8 @@ namespace Seralyth.Managers
                     buttonText = "Return to Friends",
                     method =() => Buttons.CurrentCategoryName = "Friends",
                     isTogglable = false,
-                    toolTip = "Returns you back to the friends page."
+                    toolTip = "Returns you back to the friends page.",
+                    legal = true
                 }
             };
 
@@ -1154,7 +1166,8 @@ namespace Seralyth.Managers
                         overlapText = "Join Friend",
                         method = () => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom(instance.Friends.friends[friendTarget].currentRoom, JoinType.Solo),
                         isTogglable = false,
-                        toolTip = $"Joins the user {friend.currentName}'s current room."
+                        toolTip = $"Joins the user {friend.currentName}'s current room.",
+                        legal = true
                     },
                     new ButtonInfo
                     {
@@ -1162,7 +1175,8 @@ namespace Seralyth.Managers
                         overlapText = "Invite Friend",
                         method = () => InviteFriend(friendTarget),
                         isTogglable = false,
-                        toolTip = $"Invites the user {friend.currentName} to your current room."
+                        toolTip = $"Invites the user {friend.currentName} to your current room.",
+                        legal = true
                     },
                     new ButtonInfo
                     {
@@ -1170,7 +1184,8 @@ namespace Seralyth.Managers
                         overlapText = "Request Invite",
                         method = () => RequestInviteFriend(friendTarget),
                         isTogglable = false,
-                        toolTip = $"Requests an invite from the user {friend.currentName}."
+                        toolTip = $"Requests an invite from the user {friend.currentName}.",
+                        legal = true
                     },
                     new ButtonInfo
                     {
@@ -1178,7 +1193,8 @@ namespace Seralyth.Managers
                         overlapText = "Share Preferences",
                         method = () => SharePreferences(friendTarget),
                         isTogglable = false,
-                        toolTip = $"Sends your preferences to {friend.currentName}."
+                        toolTip = $"Sends your preferences to {friend.currentName}.",
+                        legal = true
                     },
                     new ButtonInfo
                     {
@@ -1186,7 +1202,8 @@ namespace Seralyth.Managers
                         overlapText = "Share Theme",
                         method = () => ShareTheme(friendTarget),
                         isTogglable = false,
-                        toolTip = $"Sends your theme to {friend.currentName}."
+                        toolTip = $"Sends your theme to {friend.currentName}.",
+                        legal = true
                     },
                     new ButtonInfo
                     {
@@ -1194,7 +1211,8 @@ namespace Seralyth.Managers
                         overlapText = "Share Macro",
                         method = () => PromptText("What is the name of the macro you would like to send?", () => { ShareMacro(friendTarget, keyboardInput); }, null, "Done", "Cancel"),
                         isTogglable = false,
-                        toolTip = $"Sends a macro to {friend.currentName}."
+                        toolTip = $"Sends a macro to {friend.currentName}.",
+                        legal = true
                     },
                     new ButtonInfo
                     {
@@ -1202,7 +1220,8 @@ namespace Seralyth.Managers
                         overlapText = "Message",
                         method = () => ShowChatMessages(friendTarget),
                         isTogglable = false,
-                        toolTip = $"Opens the chat menu for {friend.currentName}."
+                        toolTip = $"Opens the chat menu for {friend.currentName}.",
+                        legal = true
                     },
                 });
             }
@@ -1213,7 +1232,8 @@ namespace Seralyth.Managers
                 overlapText = "Remove Friend",
                 method = () => RemoveFriend(friendTarget),
                 isTogglable = false,
-                toolTip = $"Removes the user {friend.currentName} from your friends list."
+                toolTip = $"Removes the user {friend.currentName} from your friends list.",
+                legal = true
             });
 
             if (friend.online && friend.currentRoom != "")
@@ -1222,7 +1242,8 @@ namespace Seralyth.Managers
                 {
                     buttonText = $"FriendRoom{friendTarget}",
                     overlapText = $"Current Room: {friend.currentRoom}",
-                    label = true
+                    label = true,
+                    legal = true
                 });
             }
 
@@ -1230,7 +1251,8 @@ namespace Seralyth.Managers
             {
                 buttonText = $"FriendName{friendTarget}",
                 overlapText = $"Current Name: {friend.currentName}",
-                label = true
+                label = true,
+                legal = true
             });
 
             Buttons.buttons[Buttons.GetCategory("Temporary Category")] = buttons.ToArray();
@@ -1246,25 +1268,29 @@ namespace Seralyth.Managers
                     buttonText = "Return to Incoming Friend Requests",
                     method = IncomingFriendRequests,
                     isTogglable = false,
-                    toolTip = "Returns you back to the incoming friend requests page."
+                    toolTip = "Returns you back to the incoming friend requests page.",
+                    legal = true
                 },
                 new ButtonInfo {
                     buttonText = "Accept Friend Request",
                     method =() => AcceptFriendRequest(friend.currentUserID),
                     isTogglable = false,
-                    toolTip = $"Accept {friend.currentName}'s friend request."
+                    toolTip = $"Accept {friend.currentName}'s friend request.",
+                    legal = true
                 },
                 new ButtonInfo {
                     buttonText = "Deny Friend Request",
                     method =() => DenyFriendRequest(friendTarget),
                     isTogglable = false,
-                    toolTip = $"Deny {friend.currentName}'s friend request."
+                    toolTip = $"Deny {friend.currentName}'s friend request.",
+                    legal = true
                 },
                 new ButtonInfo
                 {
                     buttonText = $"FriendName{friendTarget}",
                     overlapText = $"Current Name: {friend.currentName}",
-                    label = true
+                    label = true,
+                    legal = true
                 }
             };
 
@@ -1282,7 +1308,8 @@ namespace Seralyth.Managers
                     buttonText = "Return to Friend Page",
                     method =() => InspectFriend(friendTarget),
                     isTogglable = false,
-                    toolTip = "Returns you back to the page of your friend."
+                    toolTip = "Returns you back to the page of your friend.",
+                    legal = true
                 }
             };
 
@@ -1317,9 +1344,10 @@ namespace Seralyth.Managers
                         overlapText = text,
                         isTogglable = false,
                         method = () =>
-                            Prompt($"<{link}>", null, () => GUIUtility.systemCopyBuffer = link, "Done", "Copy")
+                            Prompt($"<{link}>", null, () => GUIUtility.systemCopyBuffer = link, "Done", "Copy"),
+                        legal = true
                     }
-                    : new ButtonInfo { buttonText = $"FriendMessage{i}", overlapText = text, label = true });
+                    : new ButtonInfo { buttonText = $"FriendMessage{i}", overlapText = text, label = true, legal = true });
             }
 
             buttons.Add(new ButtonInfo
@@ -1328,7 +1356,8 @@ namespace Seralyth.Managers
                 overlapText = "Message",
                 method = () => PromptText("What would you like to send?", () => { SendFriendMessage(friendTarget, keyboardInput); UpdateFriendMessage(friendTarget, $"        <color=grey>[</color><color=#{ColorToHex(VRRig.LocalRig.playerColor)}>{PhotonNetwork.NickName.ToUpper()}</color><color=grey>]</color> {keyboardInput}"); ShowChatMessages(friendTarget); ReloadMenu(); }, null, "Done", "Cancel"),
                 isTogglable = false,
-                toolTip = $"Sends a message to {friend.currentName}."
+                toolTip = $"Sends a message to {friend.currentName}.",
+                legal = true
             });
 
             Buttons.buttons[Buttons.GetCategory("Chat Messages")] = buttons.ToArray();

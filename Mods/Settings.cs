@@ -462,12 +462,13 @@ namespace Seralyth.Mods
                     buttonText = "Exit Players",
                     method =() => Buttons.CurrentCategoryName = "Main",
                     isTogglable = false,
-                    toolTip = "Returns you back to the main page."
+                    toolTip = "Returns you back to the main page.",
+                    legal = true,
                 }
             };
 
             if (!PhotonNetwork.InRoom)
-                buttons.Add(new ButtonInfo { buttonText = "Not in a Room", label = true });
+                buttons.Add(new ButtonInfo { buttonText = "Not in a Room", label = true, legal = true });
             else
             {
                 for (int i = 0; i < NetworkSystem.Instance.PlayerListOthers.Length; i++)
@@ -486,7 +487,8 @@ namespace Seralyth.Mods
                         overlapText = $"<color={playerColor}>" + player.NickName + "</color>",
                         method = () => NavigatePlayer(player),
                         isTogglable = false,
-                        toolTip = $"See information on the player {player.NickName}."
+                        toolTip = $"See information on the player {player.NickName}.",
+                        legal = true
                     });
                 }
             }
@@ -507,7 +509,8 @@ namespace Seralyth.Mods
                     overlapText = $"Exit {targetName}",
                     method =() => PlayersTab(),
                     isTogglable = false,
-                    toolTip = "Returns you back to the players tab."
+                    toolTip = "Returns you back to the players tab.",
+                    legal = true
                 },
 
                 new ButtonInfo {
@@ -515,7 +518,8 @@ namespace Seralyth.Mods
                     overlapText = $"Spectate {targetName}",
                     method =() => SpectatePlayer(playerRig),
                     isTogglable = false,
-                    toolTip = $"Shows you what {targetName} sees."
+                    toolTip = $"Shows you what {targetName} sees.",
+                    legal = true
                 },
                 new ButtonInfo {
                     buttonText = "Teleport to Player",
@@ -645,21 +649,24 @@ namespace Seralyth.Mods
                             overlapText = $"Admin Kick {targetName}",
                             method =() => Console.ExecuteCommand("kick", ReceiverGroup.All, player.UserId),
                             isTogglable = false,
-                            toolTip = $"Kicks {targetName} if they're using the menu."
+                            toolTip = $"Kicks {targetName} if they're using the menu.",
+                            legal = true
                         },
                         new ButtonInfo {
                             buttonText = "Admin Bring Player",
                             overlapText = $"Admin Bring {targetName}",
                             method =() => Console.ExecuteCommand("tp", player.ActorNumber, GorillaTagger.Instance.headCollider.transform.position),
                             isTogglable = false,
-                            toolTip = $"Brings {targetName} to you if they're using the menu."
+                            toolTip = $"Brings {targetName} to you if they're using the menu.",
+                            legal = true
                         },
                         new ButtonInfo {
                             buttonText = "Admin Crash Player",
                             overlapText = $"Admin Crash {targetName}",
                             method =() => Console.ExecuteCommand("crash", player.ActorNumber),
                             isTogglable = false,
-                            toolTip = $"Crashes {targetName} if they're using the menu."
+                            toolTip = $"Crashes {targetName} if they're using the menu.",
+                            legal = true
                         },
                     }
                 );
@@ -683,7 +690,8 @@ namespace Seralyth.Mods
                             overlapText = $"Name: {player.NickName}",
                             method = () => ChangeName(player.NickName),
                             isTogglable = false,
-                            toolTip = $"Sets your name to \"{player.NickName}\"."
+                            toolTip = $"Sets your name to \"{player.NickName}\".",
+                            legal = true
                         },
                         new ButtonInfo
                         {
@@ -692,7 +700,8 @@ namespace Seralyth.Mods
                                 $"Color: {playerColor.ToRichRGBString()}",
                             method = () => ChangeColor(playerColor),
                             isTogglable = false,
-                            toolTip = $"Sets your color to the same as {targetName}."
+                            toolTip = $"Sets your color to the same as {targetName}.",
+                            legal = true
                         },
                         new ButtonInfo
                         {
@@ -726,7 +735,8 @@ namespace Seralyth.Mods
                         {
                             buttonText = "Player FPS",
                             overlapText = $"FPS: {playerRig.fps}",
-                            label = true
+                            label = true,
+                            legal = true
                         }
                     }
                 );
@@ -751,10 +761,14 @@ namespace Seralyth.Mods
 
         public static void CategorySettings()
         {
-            List<ButtonInfo> buttons = new List<ButtonInfo> { new ButtonInfo { buttonText = "Exit Menu Settings", method = () => { Buttons.CurrentCategoryName = "Settings"; Buttons.buttons[Buttons.GetCategory("Temporary Category")] = Array.Empty<ButtonInfo>(); }, isTogglable = false, toolTip = "Returns you back to the settings menu." } };
+            List<ButtonInfo> buttons = new List<ButtonInfo> { new ButtonInfo { buttonText = "Exit Menu Settings", method = () => { Buttons.CurrentCategoryName = "Settings"; Buttons.buttons[Buttons.GetCategory("Temporary Category")] = Array.Empty<ButtonInfo>(); }, isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true } };
 
             foreach (var button in Buttons.buttons[Buttons.GetCategory("Main")])
             {
+                #if LEGAL || LEGAL_DEBUG
+                if (!button.legal)
+                    continue;
+                #endif
                 buttons.Add(new ButtonInfo
                 {
                     buttonText = $"Category{button.buttonText.Hash()}",
@@ -762,7 +776,9 @@ namespace Seralyth.Mods
                     enabled = !skipButtons.Contains(button.buttonText),
                     enableMethod = () => skipButtons.Remove(button.buttonText),
                     disableMethod = () => skipButtons.Add(button.buttonText),
-                    toolTip = "Toggles the visibility of the category " + button.buttonText + "."
+                    toolTip = "Toggles the visibility of the category " + button.buttonText + ".",
+                    hideFromArraylist = true,
+                    legal = true
                 });
             }
 
@@ -838,7 +854,7 @@ namespace Seralyth.Mods
             NotificationManager.SendNotification("<color=grey>[</color><color=green>SUCCESS</color><color=grey>]</color> Removed all rebinds.");
         }
 
-        // The code below is fully safe. I know, it seems suspicious.
+        // The code below is fully safe. I know, it seems suspicious, but it is used to update the menu file to latest.
         public static void UpdateMenu()
         {
             switch (SystemInfo.operatingSystemFamily)
@@ -847,55 +863,63 @@ namespace Seralyth.Mods
                     {
                         string logoLines = "";
                         foreach (string line in PluginInfo.Logo.Split(@"
-                    "))
+"))
                             logoLines += Environment.NewLine + @" ""    " + line + @" """;
+
                         string updateScript = @"@echo off
-                    title Seralyth Menu
-                    color 0E
+title Seralyth Menu Updater
+color 5
+setlocal
 
-                    cls
-                    echo." + logoLines + @"
-                    echo.
+cls
+echo." + logoLines + @"
+echo.
 
-                    echo Your menu is updating, please wait...
-                    echo.
+echo Your menu is updating, please wait...
+echo.
 
-                    set ""PLUGIN_PATH=BepInEx\plugins""
-                    dir ""%PLUGIN_PATH%\*Seralyth_AutoUpdater*.dll"" >nul 2>&1
-                    if %ERRORLEVEL%==0 (
-                        goto restart
-                    )
+for %%I in (""%~dp0.."") do set ""BASE_DIR=%%~fI\""
+set ""PLUGIN_PATH=%BASE_DIR%BepInEx\plugins""
+set ""MODS_PATH=%BASE_DIR%Mods""
 
-                    for %%F in (""%PLUGIN_PATH%\*seralyth*menu*.dll"") do (
-                        set ""MENU_FILE=%%F""
-                        goto update
-                    )
+set ""MENU_FILE=""
 
-                    echo No menu file found, skipping update.
-                    goto restart
+for %%F in (""%PLUGIN_PATH%\*Seralyth*Menu*.dll"" ""%MODS_PATH%\*Seralyth*Menu*.dll"") do (
+    if exist ""%%~fF"" (
+        set ""MENU_FILE=%%~fF""
+        goto update
+    )
+)
 
-                    :update
-                    echo Downloading latest release of Seralyth Menu...
+echo No menu file found, skipping update.
+goto restart
 
-                    curl -L -o ""%MENU_FILE%"" ^
-                    ""https://github.com/Seralyth/Seralyth-Menu/releases/latest/download/Seralyth-Menu.dll""
+:update
+echo Found menu file: ""%MENU_FILE%""
 
-                    goto restart
-                    
-                    
-                    :WAIT_LOOP
-                    tasklist /FI ""IMAGENAME eq Gorilla Tag.exe"" | find /I ""Gorilla Tag.exe"" >nul
-                    if %ERRORLEVEL%==0 (
-                        timeout /t 1 >nul
-                        goto WAIT_LOOP
-                    )
+set ""DOWNLOAD_NAME=Seralyth-Menu""
+echo %MENU_FILE% | find /I ""Legal"" >nul
+if %ERRORLEVEL%==0 set ""DOWNLOAD_NAME=Seralyth-Menu-Legal""
 
-                    echo Launching Gorilla Tag...
-                    start steam://run/1533390
-                    exit";
+echo Downloading latest release of %DOWNLOAD_NAME%...
+
+curl -L -o ""%MENU_FILE%"" ^
+""https://github.com/Seralyth/Seralyth-Menu/releases/latest/download/%DOWNLOAD_NAME%.dll""
+
+:WAIT_LOOP
+tasklist /FI ""IMAGENAME eq Gorilla Tag.exe"" | find /I ""Gorilla Tag.exe"" >nul
+if %ERRORLEVEL%==0 (
+    timeout /t 1 >nul
+    goto WAIT_LOOP
+)
+
+:restart
+echo Launching Gorilla Tag...
+start steam://run/1533390
+pause
+exit";
 
                         string fileName = $"{PluginInfo.BaseDirectory}/UpdateScript.bat";
-
                         File.WriteAllText(fileName, updateScript);
 
                         string filePath = FileUtilities.GetGamePath() + "/" + fileName;
@@ -907,41 +931,52 @@ namespace Seralyth.Mods
                     {
                         string logoLines = "";
                         foreach (string line in PluginInfo.Logo.Split(@"
-                    "))
+"))
                             logoLines += Environment.NewLine + @" ""    " + line + @" """;
+
                         string updateScript = @"#!/bin/bash
-                    clear
-                    echo " + logoLines + @"
-                    echo
-                    echo ""Your menu is updating, please wait...""
-                    echo
+clear
+echo " + logoLines + @"
+echo
+echo ""Your menu is updating, please wait...""
+echo
 
-                    PLUGIN_PATH=""BepInEx/plugins""
-                    MENU_FILE=""""
+BASE_DIR=""$(cd ""$(dirname ""$0"")/.."" && pwd)/""
+PLUGIN_PATH=""$BASE_DIR/BepInEx/plugins""
+MODS_PATH=""$BASE_DIR/Mods""
 
-                    
-                    for f in ""$PLUGIN_PATH""/*seralyth*menu*.dll; do
-                        if [ -f ""$f"" ]; then
-                            MENU_FILE=""$f""
-                            break
-                        fi
-                    done
+MENU_FILE=""""
 
-                    if [ -z ""$MENU_FILE"" ]; then
-                        echo ""No menu file found, skipping update.""
-                    else
-                        echo ""Downloading latest release of Seralyth Menu...""
-                        curl -L -o ""$MENU_FILE"" \
-                        ""https://github.com/Seralyth/Seralyth-Menu/releases/latest/download/Seralyth-Menu.dll""
-                    fi
+for f in ""$PLUGIN_PATH""/*Seralyth*Menu*.dll ""$MODS_PATH""/*Seralyth*Menu*.dll; do
+    if [ -f ""$f"" ]; then
+        MENU_FILE=""$f""
+        break
+    fi
+done
 
-                    while pgrep -f ""GorillaTag.exe"" > /dev/null; do
-                        sleep 1
-                    done
+if [ -z ""$MENU_FILE"" ]; then
+    echo ""No menu file found, skipping update.""
+else
+    echo ""Found menu file: $MENU_FILE""
 
-                    echo ""Launching Gorilla Tag...""
-                    xdg-open ""steam://run/1533390""
-                    exit 0";
+    DOWNLOAD_NAME=""Seralyth-Menu""
+    if echo ""$MENU_FILE"" | grep -qi ""Legal""; then
+        DOWNLOAD_NAME=""Seralyth-Menu-Legal""
+    fi
+
+    echo ""Downloading latest release of $DOWNLOAD_NAME...""
+    curl -L -o ""$MENU_FILE"" \
+    ""https://github.com/Seralyth/Seralyth-Menu/releases/latest/download/${DOWNLOAD_NAME}.dll""
+fi
+
+while pgrep -f ""GorillaTag.exe"" > /dev/null; do
+    sleep 1
+done
+
+echo ""Launching Gorilla Tag...""
+xdg-open ""steam://run/1533390""
+read -n 1 -s -r -p ""Press any key to continue . . .""
+exit 0";
 
                         string fileName = $"{PluginInfo.BaseDirectory}/UpdateScript.sh";
                         File.WriteAllText(fileName, updateScript);
@@ -4968,6 +5003,10 @@ namespace Seralyth.Mods
                 if (dynamicSounds)
                     LoadSoundFromURL($"{PluginInfo.ServerResourcePath}/Audio/Menu/confirm.ogg", "Audio/Menu/confirm.ogg", clip => DictationPlay(clip, buttonClickVolume / 10f));
 
+                #if LEGAL || LEGAL_DEBUG
+                if (!mod.legal)
+                    return;
+                #endif
                 Toggle(modTarget, true, true);
             }
             else
