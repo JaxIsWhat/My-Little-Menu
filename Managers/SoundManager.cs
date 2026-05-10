@@ -34,7 +34,7 @@ namespace Seralyth.Managers
         {
             ["Buttons"] = new Dictionary<string, object>
             {
-                { "Wood", 0 },
+                { "Wood", 9 },
                 { "Keyboard", 66 },
                 { "Default", 67 },
                 { "Bubble", 84 },
