@@ -5561,23 +5561,26 @@ namespace Seralyth.Mods
         public static void AutomaticESP(Action infection, Action hunt, Action other)
         {
             if (!PhotonNetwork.InRoom) return;
-            switch (GorillaGameManager.instance.GameType())
+            try
             {
-                case GameModeType.Infection:
-                case GameModeType.InfectionCompetitive:
-                case GameModeType.FreezeTag:
-                case GameModeType.PropHunt:
-                case GameModeType.Ghost:
-                case GameModeType.Ambush:
-                    infection.Invoke();
-                    break;
-                case GameModeType.HuntDown:
-                    hunt.Invoke();
-                    break;
-                default:
-                    other.Invoke();
-                    break;
-            }
+                switch (GorillaGameManager.instance.GameType())
+                {
+                    case GameModeType.Infection:
+                    case GameModeType.InfectionCompetitive:
+                    case GameModeType.FreezeTag:
+                    case GameModeType.PropHunt:
+                    case GameModeType.Ghost:
+                    case GameModeType.Ambush:
+                        infection.Invoke();
+                        break;
+                    case GameModeType.HuntDown:
+                        hunt.Invoke();
+                        break;
+                    default:
+                        other.Invoke();
+                        break;
+                }
+            } catch { }       
         }
 
         // Tracers
