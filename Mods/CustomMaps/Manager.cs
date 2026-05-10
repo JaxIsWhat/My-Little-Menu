@@ -97,7 +97,16 @@ namespace Seralyth.Mods.CustomMaps
         {
             string DirectoryTarget = FileUtilities.GetGamePath() + $"/{PluginInfo.BaseDirectory}/CustomScripts/{CustomMapLoader.LoadedMapModId}.luau";
             if (!File.Exists(DirectoryTarget))
-                File.WriteAllText(DirectoryTarget, mapScriptArchives[CustomMapManager.currentRoomMapModId]);
+            {
+                string script = CustomGameMode.LuaScript;
+
+                if (!string.IsNullOrEmpty(script) && mapScriptArchives.TryGetValue(CustomMapManager.currentRoomMapModId, out string archived))
+                    script = archived;
+                else if (string.IsNullOrEmpty(script))
+                    script = "-- This map does not have a Lua script.\n-- You can write your own script here and click \"Run Custom Script\" to execute it.";
+
+                File.WriteAllText(DirectoryTarget, script);
+            }
             Process.Start(DirectoryTarget);
         }
 
@@ -142,8 +151,18 @@ namespace Seralyth.Mods.CustomMaps
         public static CustomMap GetMapByID(long id)
         {
             if (mapCache.TryGetValue(id, out var instance)) return instance;
-            var mapTypes = Assembly.GetExecutingAssembly()
-                .GetTypes()
+
+            Type[] types;
+            try
+            {
+                types = Assembly.GetExecutingAssembly().GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types.Where(t => t != null).ToArray();
+            }
+
+            var mapTypes = types
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(CustomMap)));
 
             foreach (var type in mapTypes)
@@ -155,7 +174,6 @@ namespace Seralyth.Mods.CustomMaps
             }
 
             mapCache[id] = instance;
-
             return instance;
         }
     }

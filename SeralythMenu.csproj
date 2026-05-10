@@ -7,8 +7,26 @@
 	  <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+
+    <Configurations>Debug;Release;Legal;Legal Debug;Legal Debug</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Legal'">
+    <AssemblyName>Seralyth Menu Legal</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Legal Debug'">
+    <AssemblyName>Seralyth Menu Legal Debug</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'LEGAL_DEBUG'">
+    <AssemblyName>Seralyth Menu Legal Debug</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'DEBUG' Or '$(Configuration)' == 'Debug'">
+    <AssemblyName>Seralyth Menu Debug</AssemblyName>
+  </PropertyGroup>
+  
   <PropertyGroup> 
     <StartAction>Program</StartAction>
     <StartProgram>C:\Windows\explorer.exe</StartProgram>

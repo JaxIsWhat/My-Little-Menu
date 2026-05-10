@@ -374,6 +374,12 @@ namespace Seralyth.Menu
                             if (button == null || !button.enabled || (hideSettings && Buttons.categoryNames[categoryIndex].Contains("Settings")))
                                 continue;
 
+                            if (Buttons.buttons[Buttons.GetCategory("Temporary Category")].Contains(button) || button.hideFromArraylist)
+                                continue;
+
+                            if (!button.enabled || (hideSettings && (!hideSettings ||
+                                                                     Buttons.categoryNames[categoryIndex]
+                                                                         .Contains("Settings")))) continue;
                             string buttonText = button.overlapText ?? button.buttonText;
 
                             if (inputTextColor != "green")

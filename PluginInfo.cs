@@ -26,10 +26,15 @@ namespace Seralyth
         public const string GUID = "org.seralyth.gorillatag.seralythmenu";
         public const string Name = "Seralyth Menu";
         public const string Description = "Community powered mod menu for Gorilla Tag.";
-        public const string BuildTimestamp = "2026-05-02T10:32:44Z";
+        public const string BuildTimestamp = "2026-05-10T15:16:54Z";
         public const string Version = "4.6.0";
 
-        public const string BaseDirectory = "SeralythMenu";
+        public const string BaseDirectory =
+        #if LEGAL || LEGAL_DEBUG
+            "SeralythMenu/Legal";
+        #else
+            "SeralythMenu";
+        #endif
         public const string ClientResourcePath = "SeralythMenu.Resources.Client";
         public const string ServerResourcePath = "https://raw.githubusercontent.com/Seralyth/Seralyth-Menu/master/Resources/Server";
         public const string ServerAPI = "https://menu.seralyth.software";
@@ -48,25 +53,25 @@ namespace Seralyth
                  %%%%  %%   %##           ######%         ##%         %###%                         
                            %#%             ######        ###            ###%                        
                          %##%              %######%    #####              ###%                      
-                   #%   %##                  #######%                        ###                    
+#%   %##                  #######%                        ###                    
                    %% %##                     %#######%                        ###%                 
-                     ###                        %########%                       ###%               
-                    ###                            %#######%                       %##%             
+###                        %########%                       ###%               
+###                            %#######%                       %##%             
                   %##                                %#######%                        ###           
                 %##%                                   %#######%                     ###%           
-               ###                   %##########%        #######%                   ###             
-              ##%                  %####%    %####        %######%                ###               
-            ###                  %###%        %##%         %######%              ###                
-            ###                 ###%          %%%           %######%            ##%                 
-              ###              %###                          #######          ####                  
+###                   %##########%        #######%                   ###             
+##%                  %####%    %####        %######%                ###               
+###                  %###%        %##%         %######%              ###                
+###                 ###%          %%%           %######%            ##%                 
+###              %###                          #######          ####                  
                 %###           ####                          #######        %###                    
-                  ####         ####                          #######       ###   ##                 
+####         ####                          #######       ###   ##                 
                     %###       ####                         %######       ##%    ##%                
-                       ###      ###                         ######      ###                         
+###      ###                         ######      ###                         
                          %###   ####                       ######      ###        %%%               
-                           ####  %####                   %######     ###           #%               
+####  %####                   %######     ###           #%               
                             %%###% ####%              ########      ##%         %%%                 
-                                ###%%######%%    %#########%      ###     %%%% %%%%                 
+###%%######%%    %#########%      ###     %%%% %%%%                 
                              %#   %### %###############%         ##%%%%% %%%%                       
                               %%    %##%                       %##  %                               
                                        %##                    %#%                                   
@@ -77,7 +82,7 @@ namespace Seralyth
                                                   %%%% %%%                                          
                                                     %%%%                                            ";
 
-#if DEBUG
+#if DEBUG || LEGAL_DEBUG
         public static bool BetaBuild = true;
 #else
         public static bool BetaBuild = false;

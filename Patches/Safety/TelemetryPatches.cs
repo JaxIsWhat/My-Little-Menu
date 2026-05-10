@@ -29,7 +29,7 @@ using static Seralyth.Patches.PatchHandler;
 
 namespace Seralyth.Patches.Safety
 {
-    // Gorilla Tag's one weakness -- tracking data to get players banned. This is how they did it over the years.
+    // This is used to block out Gorilla Tag's analytics / tracking data.
     public class TelemetryPatches
     {
         public static bool enabled = true;
