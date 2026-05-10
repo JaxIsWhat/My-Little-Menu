@@ -142,8 +142,18 @@ namespace Seralyth.Mods.CustomMaps
         public static CustomMap GetMapByID(long id)
         {
             if (mapCache.TryGetValue(id, out var instance)) return instance;
-            var mapTypes = Assembly.GetExecutingAssembly()
-                .GetTypes()
+
+            Type[] types;
+            try
+            {
+                types = Assembly.GetExecutingAssembly().GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types.Where(t => t != null).ToArray();
+            }
+
+            var mapTypes = types
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(CustomMap)));
 
             foreach (var type in mapTypes)
@@ -155,7 +165,6 @@ namespace Seralyth.Mods.CustomMaps
             }
 
             mapCache[id] = instance;
-
             return instance;
         }
     }
