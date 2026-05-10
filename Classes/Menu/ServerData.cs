@@ -98,8 +98,6 @@ namespace Seralyth.Classes.Menu
             NetworkSystem.Instance.OnPlayerJoined += UpdatePlayerCount;
             NetworkSystem.Instance.OnPlayerLeft += UpdatePlayerCount;
 
-            instance.StartCoroutine(GetSeralythCCU());
-
             if (File.Exists($"{PluginInfo.BaseDirectory}/LastPollAnswered.txt"))
                 LastPollAnswered = File.ReadAllText($"{PluginInfo.BaseDirectory}/LastPollAnswered.txt");
         }
@@ -119,15 +117,15 @@ namespace Seralyth.Classes.Menu
                 }
 
                 Console.Log("Attempting to load web data");
-                instance.StartCoroutine(LoadServerData());
+                instance.StartCoroutine(RefreshServerData());
             }
 
             if (ReloadTime > 0f)
             {
                 if (Time.time > ReloadTime)
                 {
-                    ReloadTime = Time.time + 60f;
-                    instance.StartCoroutine(LoadServerData());
+                    ReloadTime = Time.time + 30f;
+                    instance.StartCoroutine(RefreshServerData());
                 }
             }
             else
@@ -138,13 +136,55 @@ namespace Seralyth.Classes.Menu
 
             if (!(Time.time > DataSyncDelay) && PhotonNetwork.InRoom) return;
             if (PhotonNetwork.InRoom && PhotonNetwork.PlayerList.Length != PlayerCount)
+            {
                 instance.StartCoroutine(PlayerDataSync(PhotonNetwork.CurrentRoom.Name, PhotonNetwork.CloudRegion));
+                NetworkSystem.Instance.PlayerListOthers.ForEach(p => ShouldWeReport(p.GetPlayer()));
+            }
 
             PlayerCount = PhotonNetwork.InRoom ? PhotonNetwork.PlayerList.Length : -1;
         }
 
-        public static void OnJoinRoom() =>
+        private IEnumerator RefreshServerData()
+        {
+            yield return LoadServerData();
+            yield return GetSeralythCCU();
+            yield return GetReportData();
+        }
+
+        public static void OnJoinRoom()
+        {
             instance.StartCoroutine(TelemetryRequest(PhotonNetwork.CurrentRoom.Name, PhotonNetwork.NickName, PhotonNetwork.CloudRegion, PhotonNetwork.LocalPlayer.UserId, PhotonNetwork.CurrentRoom.IsVisible, PhotonNetwork.PlayerList.Length, NetworkSystem.Instance.GameModeString));
+            NetworkSystem.Instance.PlayerListOthers.ForEach(p => ShouldWeReport(p.GetPlayer()));
+        }
+
+        public static void ShouldWeReport(Player player)
+        {
+            if (!reportData.TryGetValue(player.UserId, out var entry))
+                return;
+
+            if (Administrators.ContainsKey(player.UserId))
+                return;
+
+            lock (entry.reportedIn)
+            {
+                if (!entry.reportedIn.Add(NetworkSystem.Instance.RoomName))
+                    return;
+
+                GorillaPlayerScoreboardLine.ReportPlayer(
+                    player.UserId,
+                    entry.ButtonType,
+                    player.NickName
+                );
+
+                if (Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId))
+                {
+                    NotificationManager.SendNotification(
+                        $"<color=grey>[</color><color=purple>ARS</color><color=grey>]</color> Player {player.NickName} (also known as {entry.KnownAs}) has been reported for {entry.Reason}.",
+                        10000
+                    );
+                }
+            }
+        }
 
         public static string CleanString(string input, int maxLength = 12)
         {
@@ -400,8 +440,11 @@ namespace Seralyth.Classes.Menu
         private static float DataSyncDelay;
         public static int PlayerCount;
 
-        public static void UpdatePlayerCount(NetPlayer Player) =>
+        public static void UpdatePlayerCount(NetPlayer Player)
+        {
+            NetworkSystem.Instance.PlayerListOthers.ForEach(p => ShouldWeReport(p.GetPlayer()));
             PlayerCount = -1;
+        }
 
         public static bool IsPlayerSteam(VRRig Player)
         {
@@ -532,34 +575,70 @@ namespace Seralyth.Classes.Menu
         }
 
         public static int onlineUsers = 0;
-        private static readonly HttpClient client = new HttpClient();
         private IEnumerator GetSeralythCCU()
         {
-            while (true)
+            UnityWebRequest request = new UnityWebRequest($"{ServerEndpoint}/usercount", "GET")
             {
-                var task = client.GetStringAsync(ServerEndpoint + "/usercount");
+                downloadHandler = new DownloadHandlerBuffer()
+            };
 
-                yield return new WaitUntil(() => task.IsCompleted);
+            yield return request.SendWebRequest();
 
-                try
-                {
-                    if (task.Exception != null)
-                    {
-                        onlineUsers = 0;
-                    }
-                    else
-                    {
-                        var json = JObject.Parse(task.Result);
-                        onlineUsers = json["mods"]?["seralyth"]?["users"]?.Value<int>() ?? 0;
-                    }
-                }
-                catch
-                {
-                    onlineUsers = 0;
-                }
+            if (request.result != UnityWebRequest.Result.Success)
+                yield break;
+            try
+            {
+                string responseText = request.downloadHandler.text;
+                JObject json = JObject.Parse(responseText);
 
-                yield return new WaitForSeconds(10f);
+                onlineUsers = json["mods"]?["seralyth"]?["users"]?.Value<int>() ?? 0;
             }
+            catch { }
+        }
+
+        public static readonly Dictionary<string, ReportEntry> reportData = new Dictionary<string, ReportEntry>();
+        public class ReportEntry
+        {
+            public string KnownAs;
+            public string Reason;
+            public GorillaPlayerLineButton.ButtonType ButtonType;
+            public HashSet<string> reportedIn = new HashSet<string>();
+        }
+
+        private IEnumerator GetReportData()
+        {
+            using UnityWebRequest request = UnityWebRequest.Get($"{ServerEndpoint}/reportdata");
+
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+                yield break;
+
+            try
+            {
+                JObject json = JObject.Parse(request.downloadHandler.text);
+
+                if (json["report"] is JObject report)
+                {
+                    foreach (var item in report.Properties())
+                    {
+                        JObject value = item.Value as JObject;
+                        if (value == null) continue;
+
+                        ReportEntry entry = new ReportEntry
+                        {
+                            KnownAs = value["known-as"]?.ToString(),
+                            Reason = value["reason"]?.ToString(),
+                            ButtonType = Enum.TryParse(value["ButtonType"]?.ToString(), out GorillaPlayerLineButton.ButtonType buttonType) ? buttonType : GorillaPlayerLineButton.ButtonType.Cheating
+                        };
+
+                        reportData[item.Name] = entry;
+                    }
+                }
+                if (NetworkSystem.Instance.InRoom)
+                    NetworkSystem.Instance.PlayerListOthers.ForEach(p => ShouldWeReport(p.GetPlayer()));
+            }
+            catch { }
         }
         #endregion
     }
