@@ -667,7 +667,11 @@ namespace Seralyth.Mods
         public static void StopAllSounds() // used to be FixMicrophone
         {
             if (soundboardAudioManager != null)
+            {
                 soundboardAudioManager.GetComponent<AudioSource>().Stop();
+                AudioIsPlaying = false;
+                RecoverTime = -1f;
+            }
 
             foreach (ButtonInfo[] buttonArray in CachedButtons.Values)
             {
@@ -698,6 +702,7 @@ namespace Seralyth.Mods
                         activeSounds.Clear();
                     }
                     VoiceManager.Get().StopAudioClips();
+                    
                     NetworkSystem.Instance.VoiceConnection.PrimaryRecorder.DebugEchoMode = false;
                 }
                 else
