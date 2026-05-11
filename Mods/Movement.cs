@@ -3695,6 +3695,36 @@ namespace Seralyth.Mods
             GTPlayer.Instance.nativeScale = sizeScale;
         }
 
+        public static void SilentRotate(bool enable, Quaternion rot)
+        {
+            if (enable)
+            {
+                SerializePatch.OverrideSerialization ??= () =>
+                {
+                    if (!PhotonNetwork.InRoom)
+                        return true;
+
+                    Quaternion archive = VRRig.LocalRig.transform.rotation;
+                    VRRig.LocalRig.transform.rotation = rot;
+                    SendSerialize(VRRig.LocalRig.GetPhotonView());
+
+                    VRRig.LocalRig.transform.rotation = archive;
+                    return false;
+                };
+            }
+            else if (!enable)
+                SerializePatch.OverrideSerialization = null;
+        }
+
+        public static void Rotate(Quaternion rot) =>
+            VRRig.LocalRig.transform.rotation = rot;
+
+        public static void VRRigLateUpdate_Dinnerbone() =>
+            VRRig.LocalRig.transform.rotation = Quaternion.Euler(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, 180f);
+
+        public static void VRRigLateUpdate_SpazBody() =>
+            VRRig.LocalRig.transform.rotation = Random.rotationUniform;
+
         public static void DisableSizeChanger()
         {
             sizeScale = 1f;

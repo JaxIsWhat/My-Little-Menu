@@ -746,6 +746,7 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Spin Head Z", method =() => Fun.SpinHead("z"), disableMethod = Fun.FixHead, toolTip = "Spins your head on the Z axis."},
 
                 new ButtonInfo { buttonText = "Spaz Rig <color=grey>[</color><color=green>A</color><color=grey>]</color>", enableMethod = Movement.EnableSpazRig, method = Movement.SpazRig, disableMethod = Movement.DisableSpazRig, toolTip = "Makes every part of your rig spaz out a little bit when holding <color=green>A</color>."},
+                new ButtonInfo { buttonText = "Spaz Full Body", enableMethod =() => TorsoPatch.VRRigLateUpdate += Movement.VRRigLateUpdate_SpazBody, method =() => ghostException = true, disableMethod =() => { TorsoPatch.VRRigLateUpdate -= Movement.VRRigLateUpdate_SpazBody; ghostException = false; }, toolTip = "Makes your body spaz in a bunch of different directions."},
                 new ButtonInfo { buttonText = "Spaz Rig Hands <color=grey>[</color><color=green>A</color><color=grey>]</color>", method = Movement.SpazHands, toolTip = "Makes your rig's hands spaz out everywhere when holding <color=green>A</color>."},
                 new ButtonInfo { buttonText = "Spaz Hands <color=grey>[</color><color=green>A</color><color=grey>]</color>", method = Movement.SpazRealHands, toolTip = "Makes your hands spaz out everywhere when holding <color=green>A</color>."},
                 new ButtonInfo { buttonText = "Random Spaz Head Position", enableMethod = Movement.EnableSpazHead, method = Movement.RandomSpazHeadPosition, disableMethod = Movement.FixHeadPosition, toolTip = "Makes your head position spaz out for 0 to 1 seconds every 1 to 4 seconds."},
@@ -773,6 +774,7 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Spaz Rig Body", method =() => Movement.SetBodyPatch(true, 1), disableMethod =() => Movement.SetBodyPatch(false), toolTip = "Gives your body a seizure, randomizing its rotation."},
                 new ButtonInfo { buttonText = "Reverse Rig Body", method =() => Movement.SetBodyPatch(true, 2), disableMethod =() => Movement.SetBodyPatch(false), toolTip = "Flips your body around backwards, but not your head."},
                 new ButtonInfo { buttonText = "Rec Room Body", method = Movement.RecRoomBody, disableMethod =() => Movement.SetBodyPatch(false), toolTip = "Makes your rig like how the Rec Room bodies are."},
+                new ButtonInfo { buttonText = "Dinnerbone", enableMethod =() => TorsoPatch.VRRigLateUpdate += Movement.VRRigLateUpdate_Dinnerbone, method =() => ghostException = true, disableMethod =() => { TorsoPatch.VRRigLateUpdate -= Movement.VRRigLateUpdate_Dinnerbone; ghostException = false;  }, toolTip = "Flips you upside down, inspired by the easter egg in Minecraft."},
                 new ButtonInfo { buttonText = "Freeze Body Rotation <color=grey>[</color><color=green>G</color><color=grey>]</color>", method = Movement.FreezeBodyRotation, disableMethod =() => Movement.SetBodyPatch(false), toolTip = "Freezes your body rotation in place, but not your head, when holding <color=green>grip</color>."},
 
                 new ButtonInfo { buttonText = "Auto Dance <color=grey>[</color><color=green>A</color><color=grey>]</color>", aliases = new[] { "Emote" }, method = Movement.AutoDance, toolTip = "Makes you dance when holding <color=green>A</color>."},
@@ -792,8 +794,9 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Eye Contact", enableMethod =() => TorsoPatch.VRRigLateUpdate += Movement.EyeContact, disableMethod =() => TorsoPatch.VRRigLateUpdate -= Movement.EyeContact, toolTip = "Makes you stare at anyone who is looking at you."},
                 new ButtonInfo { buttonText = "Floating Rig", enableMethod = Movement.EnableFloatingRig, method = Movement.FloatingRig, disableMethod = Movement.DisableFloatingRig, toolTip = "Makes your rig float."},
 
+
                 new ButtonInfo { buttonText = "Bees", method = Movement.Bees, disableMethod = Movement.EnableRig, toolTip = "Makes your rig teleport to random players, imitating the bees ghost."},
-                new ButtonInfo { buttonText = "Bees <color=grey>[</color><color=green>G</color><color=grey>]</color>", method =() =>{ if (rightGrab) {Movement.Bees(); } }, disableMethod = Movement.EnableRig, toolTip = "Makes your rig teleport to random players when holding <color=green>grip</color>, imitating the bees ghost."},
+                new ButtonInfo { buttonText = "Bees <color=grey>[</color><color=green>G</color><color=grey>]</color>", method =() =>{ if (rightGrab) { Movement.Bees(); } }, disableMethod = Movement.EnableRig, toolTip = "Makes your rig teleport to random players when holding <color=green>grip</color>, imitating the bees ghost."},
 
                 new ButtonInfo { buttonText = "Piggyback Gun", aliases = new[] { "Ride Gun" }, method = Movement.PiggybackGun, toolTip = "Teleports you on top of whoever your hand desires repeatedly."},
                 new ButtonInfo { buttonText = "Piggyback All", aliases = new[] { "Ride All" }, enableMethod = Movement.PiggybackAll, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Makes you appear on top of everyone in the room"},
