@@ -479,6 +479,10 @@ namespace Seralyth.Mods
                 regwatchShell.transform.parent.localPosition += new Vector3(0.025f, 0f, 0f);
                 regwatchShell.transform.localPosition += new Vector3(0.025f, 0f, -0.035f);
             }
+
+            regwatchText.GetComponent<Text>().font = Resources.FindObjectsOfTypeAll<Font>().FirstOrDefault(f => f.name == "UtopiumPixel");
+            regwatchText.GetComponent<Text>().supportRichText = true;
+            regwatchText.GetComponent<Text>().fontSize = 10;
         }
 
         private static TMP_SpriteAsset _infoSpriteAsset;
