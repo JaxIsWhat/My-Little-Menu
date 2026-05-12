@@ -431,17 +431,17 @@ namespace Seralyth.Mods
                     overlapText = $"Change Volume <color=grey>[</color><color=green>{Math.Round(sound.Clip.Volume, 1)}</color><color=grey>]</color>",
                     method = () =>
                     {
-                        sound.Clip.Volume = Mathf.Clamp(sound.Clip.Volume + 0.1f, 0, 10);
+                        sound.Clip.Volume = Mathf.Clamp(sound.Clip.Volume + 0.05f, 0, 10);
                         volumeButton.overlapText = $"Change Volume <color=grey>[</color><color=green>{Math.Round(sound.Clip.Volume, 1)}</color><color=grey>]</color>";
                     },
                     enableMethod = () =>
                     {
-                        sound.Clip.Volume = Mathf.Clamp(sound.Clip.Volume + 0.1f, 0, 10);
+                        sound.Clip.Volume = Mathf.Clamp(sound.Clip.Volume + 0.05f, 0, 10);
                         volumeButton.overlapText = $"Change Volume <color=grey>[</color><color=green>{Math.Round(sound.Clip.Volume, 1)}</color><color=grey>]</color>";
                     },
                     disableMethod = () =>
                     {
-                        sound.Clip.Volume = Mathf.Clamp(sound.Clip.Volume - 0.1f, 0, 10);
+                        sound.Clip.Volume = Mathf.Clamp(sound.Clip.Volume - 0.05f, 0, 10);
                         volumeButton.overlapText = $"Change Volume <color=grey>[</color><color=green>{Math.Round(sound.Clip.Volume, 1)}</color><color=grey>]</color>";
                     },
                     incremental = true,
@@ -455,17 +455,17 @@ namespace Seralyth.Mods
                     overlapText = $"Change Speed <color=grey>[</color><color=green>{Math.Round(sound.Clip.Speed, 1)}</color><color=grey>]</color>",
                     method = () =>
                     {
-                        sound.Clip.Speed = Mathf.Clamp(sound.Clip.Speed + 0.1f, 0, 5);
+                        sound.Clip.Speed = Mathf.Clamp(sound.Clip.Speed + 0.05f, 0, 5);
                         speedButton.overlapText = $"Change Speed <color=grey>[</color><color=green>{Math.Round(sound.Clip.Speed, 1)}</color><color=grey>]</color>";
                     },
                     enableMethod = () =>
                     {
-                        sound.Clip.Speed = Mathf.Clamp(sound.Clip.Speed + 0.1f, 0, 5);
+                        sound.Clip.Speed = Mathf.Clamp(sound.Clip.Speed + 0.05f, 0, 5);
                         speedButton.overlapText = $"Change Speed <color=grey>[</color><color=green>{Math.Round(sound.Clip.Speed, 1)}</color><color=grey>]</color>";
                     },
                     disableMethod = () =>
                     {
-                        sound.Clip.Speed = Mathf.Clamp(sound.Clip.Speed - 0.1f, 0, 5);
+                        sound.Clip.Speed = Mathf.Clamp(sound.Clip.Speed - 0.05f, 0, 5);
                         speedButton.overlapText = $"Change Speed <color=grey>[</color><color=green>{Math.Round(sound.Clip.Speed, 1)}</color><color=grey>]</color>";
                     },
                     incremental = true,

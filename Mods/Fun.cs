@@ -107,9 +107,9 @@ namespace Seralyth.Mods
         public static void ChangeSoundboardVolume(bool positive = true)
         {
             if (positive)
-                soundboardVolumeIndex += 0.1f;
+                soundboardVolumeIndex += 0.05f;
             else
-                soundboardVolumeIndex -= 0.1f;
+                soundboardVolumeIndex -= 0.05f;
 
             if (soundboardVolumeIndex > 5)
                 soundboardVolumeIndex = 0;
@@ -127,9 +127,9 @@ namespace Seralyth.Mods
         public static void ChangeSoundboardSpeed(bool positive = true)
         {
             if (positive)
-                soundboardSpeedIndex += 0.1f;
+                soundboardSpeedIndex += 0.05f;
             else
-                soundboardSpeedIndex -= 0.1f;
+                soundboardSpeedIndex -= 0.05f;
 
             if (soundboardSpeedIndex > 5)
                 soundboardSpeedIndex = 0;
