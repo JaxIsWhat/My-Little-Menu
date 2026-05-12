@@ -85,6 +85,7 @@ namespace Seralyth.Managers
 
         public static IEnumerator AskAI(string text)
         {
+            generating = true;
             string filePath = $"{PluginInfo.BaseDirectory}/Seralyth_SystemPrompt.txt";
             if (!File.Exists(filePath))
                 File.WriteAllText(filePath, SystemPrompt);
@@ -104,7 +105,6 @@ namespace Seralyth.Managers
             using UnityWebRequest request = UnityWebRequest.Get(api);
             request.downloadHandler = new DownloadHandlerBuffer();
             yield return request.SendWebRequest();
-            generating = true;
 
             if (request.result != UnityWebRequest.Result.Success)
             {

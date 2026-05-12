@@ -5094,9 +5094,6 @@ exit 0";
 
         public static IEnumerator DictationRecognizer()
         {
-            if (AIManager.generating)
-                yield break;
-
             ButtonInfo mod = Buttons.GetIndex("AI Assistant");
 
             PhraseRecognitionSystem.Shutdown();
@@ -5121,6 +5118,9 @@ exit 0";
             drec = new DictationRecognizer();
             drec.DictationResult += (text, confidence) =>
             {
+                if (AIManager.generating)
+                    return;
+
                 if (debugDictation)
                     LogManager.Log($"Dictation result: {text}");
                 if (cancelKeywords.Contains(text.ToLower()))
@@ -5152,6 +5152,8 @@ exit 0";
 
             drec.DictationComplete += (completionCause) =>
             {
+                if (AIManager.generating)
+                    return;
                 if (debugDictation)
                     LogManager.Log($"completion cause: {completionCause}");
                 if (completionCause.ToString() == "TimeoutExceeded")
