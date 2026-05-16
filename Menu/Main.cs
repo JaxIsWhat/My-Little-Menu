@@ -61,6 +61,7 @@ using WebSocketSharp;
 using static Seralyth.Utilities.AssetUtilities;
 using static Seralyth.Utilities.FileUtilities;
 using static Seralyth.Utilities.RandomUtilities;
+using static Unity.Burst.Intrinsics.X86.Avx;
 using ButtonCollider = Seralyth.Classes.Menu.ButtonCollider;
 using CommonUsages = UnityEngine.XR.CommonUsages;
 using Console = Seralyth.Classes.Menu.Console;
@@ -113,6 +114,8 @@ namespace Seralyth.Menu
             SerializePatch.OnSerialize += OnSerialize;
             PlayerSerializePatch.OnPlayerSerialize += OnPlayerSerialize;
 
+            for (int i = 0; i < 2; i++)
+                Visuals.InstantiateWatch();
             CrystalMaterial = GetObject("Environment Objects/LocalObjects_Prefab/ForestToCave/C_Crystal_Chunk")?.GetComponent<Renderer>()?.material;
             TryOnRoom = GetObject("Environment Objects/TriggerZones_Prefab/ZoneTransitions_Prefab/Cosmetics Room Triggers/TryOnRoom");
 
@@ -230,6 +233,7 @@ namespace Seralyth.Menu
                 else
                     NotificationManager.SendNotification($"<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> {PatchHandler.PatchErrors} patch{(PatchHandler.PatchErrors > 1 ? "es" : "")} failed to initialize. Please report this as an issue to the GitHub repository.", 10000);
             }
+
 
         }
 
@@ -547,6 +551,9 @@ namespace Seralyth.Menu
                 #endregion
 
                 #region Menu Features
+                // Update watches
+                Watches.ForEach(watch => watch.Update());
+
                 // Fix for disorganized menu
                 if (disorganized && Buttons.CurrentCategoryName != "Main")
                 {
@@ -986,7 +993,6 @@ namespace Seralyth.Menu
                 {
                     if (watchMenu)
                     {
-                        watchShell.GetComponent<Renderer>().material = CustomBoardManager.BoardMaterial;
                         ButtonInfo[] toSortOf = Buttons.buttons[Buttons.CurrentCategoryIndex];
 
                         if (Buttons.CurrentCategoryName == "Favorite Mods")
@@ -1006,22 +1012,24 @@ namespace Seralyth.Menu
                             toSortOf = enabledMods.ToArray();
                         }
 
-                        Text watchTextText = watchText.GetComponent<Text>();
+                        TextMeshProUGUI watchText = Watches[0].text;
 
-                        watchTextText.text = toSortOf[watchMenuIndex].buttonText;
+                        string text = toSortOf[watchMenuIndex].buttonText;
+
                         if (toSortOf[watchMenuIndex].overlapText != null)
-                            watchTextText.text = toSortOf[watchMenuIndex].overlapText;
+                            text = toSortOf[watchMenuIndex].overlapText;
 
-                        watchTextText.text += $"\n<color=grey>[{watchMenuIndex + 1}/{toSortOf.Length}]\n{DateTime.Now:hh:mm tt}</color>";
-                        watchTextText.color = textColors[0].GetCurrentColor();
+                        text += $"\n<color=grey>[{watchMenuIndex + 1}/{toSortOf.Length}]\n{DateTime.Now:hh:mm tt}</color>";
 
-                        watchTextText.text = FollowMenuSettings(watchTextText.text, false);
+                        text = FollowMenuSettings(text, false);
+
+                        watchText.SafeSetText(text);
 
                         if (watchIndicatorMat == null)
                             watchIndicatorMat = new Material(Shader.Find("GorillaTag/UberShader"));
 
                         watchIndicatorMat.color = toSortOf[watchMenuIndex].enabled ? buttonColors[1].GetCurrentColor() : buttonColors[0].GetCurrentColor();
-                        watchEnabledIndicator.GetComponent<Image>().material = watchIndicatorMat;
+                        Watches[0].indicator.material = watchIndicatorMat;
 
                         Vector2 js = rightHand ? rightJoystick : leftJoystick;
                         if (Time.time > wristMenuDelay)
@@ -1431,7 +1439,10 @@ namespace Seralyth.Menu
                             }
                             if (button.postMethod != null)
                                 postActions.Add(button.buttonText);
-                            button.method?.Invoke();
+                            if (button.firstFrame)
+                                button.firstFrame = false;
+                            else
+                                button.method?.Invoke();
                             if (button.rebindKey != null)
                             {
                                 leftPrimary = _leftPrimary;
@@ -1878,7 +1889,7 @@ namespace Seralyth.Menu
             #endif
             if (!shouldCreate)
                 return;
-            if (!method.label)
+            if (method != null && !method.label)
             {
                 GameObject buttonObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 if (!UnityInput.GetKey(Key.Q) && !isKeyboardPc)
@@ -2772,9 +2783,9 @@ namespace Seralyth.Menu
                 fpsCount = fps;
                 fps.fontSize = 1;
                 fps.richText = true;
-                fps.fontStyle = activeFontStyle;
-                fps.alignment = TextAlignmentOptions.Center;
-                fps.overflowMode = TextOverflowModes.Overflow;
+                fps.SafeSetFontStyle(activeFontStyle);
+                fps.SafeSetAlignment(TextAlignmentOptions.Center);
+                fps.SafeSetOverflowMode(TextOverflowModes.Overflow);
                 fps.enableAutoSizing = true;
                 fps.fontSizeMin = 0;
                 RectTransform fpsTransform = fps.GetComponent<RectTransform>();
@@ -3034,9 +3045,9 @@ namespace Seralyth.Menu
                     for (int i = 0; i < renderButtons.Length; i++)
                         AddButton((i + buttonIndexOffset + buttonOffset) * ButtonDistance, i, renderButtons[i]);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    LogManager.Log("Menu draw is erroring, returning to home page");
+                    LogManager.Log($"Menu draw is erroring, returning to home page\nException: {ex}");
                     Buttons.CurrentCategoryName = "Main";
                 }
             }
@@ -6102,7 +6113,7 @@ namespace Seralyth.Menu
                                             }
                                             else
                                             {
-                                                if (target.buttonText != "Exit Favorite Mods")
+                                                if (target.buttonText != "Exit Favorite Mods" && !disableFavoritingKeybind)
                                                 {
                                                     if (favorites.Contains(target.buttonText))
                                                     {
@@ -7027,16 +7038,30 @@ jgs \_   _/ |Oo\
 
         public static GameObject TryOnRoom;
 
-        public static GameObject watchobject;
-        public static GameObject watchText;
-        public static GameObject watchShell;
-        public static GameObject watchEnabledIndicator;
+        public class WatchInfo
+        {
+            public GameObject gameObject;
+            public TextMeshProUGUI text;
+            public GameObject shell;
+            public Image indicator;
+
+            public void Update()
+            {
+                Renderer renderer = shell.GetComponent<Renderer>();
+                if (text.font != activeFont)
+                    text.SafeSetFont(activeFont);
+                if (text.fontStyle != activeFontStyle)
+                    text.SafeSetFontStyle(activeFontStyle);
+                if (renderer.material != CustomBoardManager.BoardMaterial)
+                    renderer.material = CustomBoardManager.BoardMaterial;
+            }
+        }
+
+        public static List<WatchInfo> Watches = new List<WatchInfo>();
+
         public static Material watchIndicatorMat;
         public static int watchMenuIndex;
 
-        public static GameObject regwatchobject;
-        public static GameObject regwatchText;
-        public static GameObject regwatchShell;
         public static Material glass;
 
         public static Material cannabisMat;
@@ -7151,6 +7176,7 @@ jgs \_   _/ |Oo\
         public static string inputTextColor = "green";
 
         public static bool toggleDebugEchoMode;
+        public static bool disableFavoritingKeybind;
 
         public static bool annoyingMode; // Build with this enabled for a surprise
         public static readonly string[] facts = {

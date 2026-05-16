@@ -45,7 +45,7 @@ namespace Seralyth.Extensions
             if (font == null)
                 return;
 
-            if (tmp.font.hashCode != font.hashCode)
+            if (tmp.font == null || tmp.font.hashCode != font.hashCode)
                 tmp.font = font;
         }
 
@@ -75,6 +75,30 @@ namespace Seralyth.Extensions
             if (!Mathf.Approximately(tmp.characterSpacing, targetSpacing))
                 tmp.characterSpacing = targetSpacing;
         }
+
+        public static void SafeSetWrappingMode(this TMP_Text tmp, TextWrappingModes mode)
+        {
+            if (tmp == null)
+                return;
+            if (tmp.textWrappingMode != mode)
+                tmp.textWrappingMode = mode;
+        }
+
+        public static void SafeSetOverflowMode(this TMP_Text tmp, TextOverflowModes mode)
+        {
+            if (tmp == null)
+                return;
+            if (tmp.overflowMode != mode)
+                tmp.overflowMode = mode;
+        }
+        public static void SafeSetAlignment(this TMP_Text tmp, TextAlignmentOptions mode)
+        {
+            if (tmp == null)
+                return;
+            if (tmp.alignment != mode)
+                tmp.alignment = mode;
+        }
+
 
         private static Shader _tmpShader;
         public static Shader TmpShader

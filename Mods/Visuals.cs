@@ -46,6 +46,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TextCore;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
 using WebSocketSharp;
 using static Seralyth.Menu.Main;
 using static Seralyth.Utilities.AssetUtilities;
@@ -453,38 +454,6 @@ namespace Seralyth.Mods
             }
         }
 
-        public static void WatchOn()
-        {
-            GameObject mainwatch = VRRig.LocalRig.transform.Find("rig/hand.L/huntcomputer (1)").gameObject;
-            regwatchobject = Object.Instantiate(mainwatch, rightHand ? VRRig.LocalRig.transform.Find("rig/hand.R").transform : VRRig.LocalRig.transform.Find("rig/hand.L").transform, false);
-            Object.Destroy(regwatchobject.GetComponent<GorillaHuntComputer>());
-            regwatchobject.SetActive(true);
-
-            Transform thething = regwatchobject.transform.Find("HuntWatch_ScreenLocal/Canvas/Anchor");
-            thething.Find("Hat").gameObject.SetActive(false);
-            thething.Find("Face").gameObject.SetActive(false);
-            thething.Find("Badge").gameObject.SetActive(false);
-            thething.Find("Material").gameObject.SetActive(false);
-            thething.Find("Left Hand").gameObject.SetActive(false);
-            thething.Find("Right Hand").gameObject.SetActive(false);
-
-            regwatchText = thething.Find("Text").gameObject;
-            regwatchShell = regwatchobject.transform.Find("HuntWatch_ScreenLocal").gameObject;
-
-            regwatchShell.GetComponent<Renderer>().material = CustomBoardManager.BoardMaterial;
-
-            if (rightHand)
-            {
-                regwatchShell.transform.localRotation = Quaternion.Euler(0f, 140f, 0f);
-                regwatchShell.transform.parent.localPosition += new Vector3(0.025f, 0f, 0f);
-                regwatchShell.transform.localPosition += new Vector3(0.025f, 0f, -0.035f);
-            }
-
-            regwatchText.GetComponent<Text>().font = Resources.FindObjectsOfTypeAll<Font>().FirstOrDefault(f => f.name == "UtopiumPixel");
-            regwatchText.GetComponent<Text>().supportRichText = true;
-            regwatchText.GetComponent<Text>().fontSize = 10;
-        }
-
         private static TMP_SpriteAsset _infoSpriteAsset;
         public static TMP_SpriteAsset InfoSprites
         {
@@ -579,6 +548,54 @@ namespace Seralyth.Mods
             }
         }
 
+        public static void InstantiateWatch()
+        {
+            GameObject mainwatch = VRRig.LocalRig.transform.Find("rig/hand.L/huntcomputer (1)").gameObject;
+            GameObject watch = Object.Instantiate(mainwatch,
+                rightHand ? VRRig.LocalRig.transform.Find("rig/hand.R").transform
+                          : VRRig.LocalRig.transform.Find("rig/hand.L").transform, false);
+
+            Object.DestroyImmediate(watch.GetComponent<GorillaHuntComputer>());
+
+            Transform anchor = watch.transform.Find("HuntWatch_ScreenLocal/Canvas/Anchor");
+            anchor.Find("Hat").gameObject.SetActive(false);
+            anchor.Find("Face").gameObject.SetActive(false);
+            anchor.Find("Badge").gameObject.SetActive(false);
+            anchor.Find("Material").gameObject.SetActive(false);
+            anchor.Find("Right Hand").gameObject.SetActive(false);
+            anchor.Find("Left Hand").gameObject.SetActive(false);
+
+            GameObject shell = watch.transform.Find("HuntWatch_ScreenLocal").gameObject;
+
+            if (rightHand)
+            {
+                shell.transform.localRotation = Quaternion.Euler(0f, 140f, 0f);
+                shell.transform.parent.localPosition += new Vector3(0.025f, 0f, 0f);
+                shell.transform.localPosition += new Vector3(0.025f, 0f, -0.035f);
+            }
+
+            GameObject textObject = anchor.Find("Text").gameObject;
+            Object.DestroyImmediate(textObject.GetComponent<Text>());
+
+            TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
+            tmp.SafeSetFont(activeFont);
+            tmp.SafeSetFontStyle(activeFontStyle);
+            tmp.SafeSetFontSize(10);
+            tmp.SafeSetWrappingMode(TextWrappingModes.Normal);
+            tmp.SafeSetOverflowMode(TextOverflowModes.Truncate);
+
+            Watches.Add(new WatchInfo
+            {
+                gameObject = watch,
+                text = tmp,
+                shell = shell,
+                indicator = anchor.Find("Left Hand").gameObject.GetComponent<Image>()
+            });
+        }
+
+        public static void WatchOn() =>
+            Watches[1].gameObject.SetActive(true);
+
         public static bool infoWatchMenuName;
         public static bool infoWatchTime;
         public static bool infoWatchClip;
@@ -586,33 +603,45 @@ namespace Seralyth.Mods
         public static bool infoWatchCode;
         public static void WatchStep()
         {
-            bool defaultWatch = !infoWatchMenuName && !infoWatchTime && !infoWatchClip && !infoWatchFPS && !infoWatchCode;
-            string watchText = "";
+            TextMeshProUGUI tmp = Watches[1].text;
 
-            Text watchTextComponent = regwatchText.GetComponent<Text>();
+            if (tmp)
+            {
+                bool defaultWatch = !infoWatchMenuName && !infoWatchTime && !infoWatchClip && !infoWatchFPS && !infoWatchCode;
 
-            if (infoWatchMenuName || defaultWatch) watchTextComponent.text = "Seralyth Menu\n<color=grey>";
-            if (doCustomName && (infoWatchMenuName || defaultWatch))
-                watchTextComponent.text = NoRichtextTags(customMenuName) + "\n<color=grey>";
-            if (!infoWatchMenuName && !defaultWatch)
-                watchTextComponent.text = "<color=grey>";
+                string watchText = "";
 
-            if (infoWatchFPS || defaultWatch) watchText += lastDeltaTime + " FPS\n";
-            if (infoWatchTime || defaultWatch) watchText += DateTime.Now.ToString("hh:mm tt") + "\n";
-            if (infoWatchCode) watchText += (PhotonNetwork.InRoom ? PhotonNetwork.CurrentRoom.Name : "Not in room") + "\n";
-            if (infoWatchClip) watchText += "Clip: " + (GUIUtility.systemCopyBuffer.Length > 20 ? GUIUtility.systemCopyBuffer[..20] : GUIUtility.systemCopyBuffer) + "\n";
+                if (infoWatchMenuName || defaultWatch)
+                    watchText = (doCustomName ? NoRichtextTags(customMenuName) : "Seralyth Menu") + "\n<color=grey>";
+                else if (!infoWatchMenuName && !defaultWatch)
+                    watchText = "<color=grey>";
 
-            watchText += "</color>";
-            watchTextComponent.color = textColors[0].GetCurrentColor();
-            watchTextComponent.text += watchText;
-            if (lowercaseMode)
-                watchTextComponent.text = watchTextComponent.text.ToLower();
-            if (uppercaseMode)
-                watchTextComponent.text = watchTextComponent.text.ToUpper();
+                if (infoWatchFPS || defaultWatch)
+                    watchText += lastDeltaTime + " FPS\n";
+
+                if (infoWatchTime || defaultWatch)
+                    watchText += DateTime.Now.ToString("hh:mm tt") + "\n";
+
+                if (infoWatchCode)
+                    watchText += (PhotonNetwork.InRoom ? PhotonNetwork.CurrentRoom.Name : "Not in room") + "\n";
+
+                if (infoWatchClip)
+                {
+                    string clip = GUIUtility.systemCopyBuffer;
+                    watchText += "Clip: " + (clip.Length > 20 ? clip[..20] : clip) + "\n";
+                }
+
+                watchText += "</color>";
+                tmp.SafeSetText(lowercaseMode ? watchText.ToLower() : uppercaseMode ? watchText.ToUpper() : watchText);
+                
+            } else
+            {
+                LogManager.LogError("Watch text component not found");
+            }
         }
 
         public static void WatchOff() =>
-            Object.Destroy(regwatchobject);
+             Watches[1].gameObject.SetActive(false);
 
         public static Material oldSkyMat;
         public static void DoCustomSkyboxColor()

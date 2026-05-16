@@ -50,5 +50,7 @@ namespace Seralyth.Classes.Menu
 
         public string customBind;
         public string rebindKey;
+
+        internal bool firstFrame = true;
     }
 }

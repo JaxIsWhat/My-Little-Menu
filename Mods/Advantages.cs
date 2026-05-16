@@ -785,12 +785,16 @@ namespace Seralyth.Mods
 
                 if (GetGunInput(true) && Time.time > tagGunDelay)
                 {
-                    VRRig gunTarget = Ray.collider.GetComponentInParent<VRRig>();
-                    if (gunTarget && !gunTarget.IsLocal())
+                    try
                     {
-                        tagGunDelay = Time.time + 0.2f;
-                        InstantTagPlayer(NetPlayerToPlayer(GetPlayerFromVRRig(gunTarget)));
+                        VRRig gunTarget = Ray.collider.GetComponentInParent<VRRig>();
+                        if (gunTarget && !gunTarget.IsLocal())
+                        {
+                            tagGunDelay = Time.time + 0.2f;
+                            InstantTagPlayer(NetPlayerToPlayer(GetPlayerFromVRRig(gunTarget)));
+                        }
                     }
+                    catch { }
                 }
             }
         }

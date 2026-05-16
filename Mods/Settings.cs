@@ -21,6 +21,7 @@
 
 using GorillaExtensions;
 using GorillaLocomotion;
+using HarmonyLib;
 using Photon.Pun;
 using Photon.Realtime;
 using Seralyth.Classes.Menu;
@@ -1014,39 +1015,13 @@ exit 0";
         public static void WatchMenuOn()
         {
             watchMenu = true;
-            GameObject mainwatch = VRRig.LocalRig.transform.Find("rig/hand.L/huntcomputer (1)").gameObject;
-            watchobject = Object.Instantiate(mainwatch,
-                rightHand ?
-                VRRig.LocalRig.transform.Find("rig/hand.R").transform :
-                VRRig.LocalRig.transform.Find("rig/hand.L").transform, false);
-
-            Object.Destroy(watchobject.GetComponent<GorillaHuntComputer>());
-            watchobject.SetActive(true);
-
-            Transform watchCanvas = watchobject.transform.Find("HuntWatch_ScreenLocal/Canvas/Anchor");
-            watchCanvas.Find("Hat").gameObject.SetActive(false);
-            watchCanvas.Find("Face").gameObject.SetActive(false);
-            watchCanvas.Find("Badge").gameObject.SetActive(false);
-            watchCanvas.Find("Material").gameObject.SetActive(false);
-            watchCanvas.Find("Right Hand").gameObject.SetActive(false);
-
-            watchText = watchCanvas.Find("Text").gameObject;
-            watchEnabledIndicator = watchCanvas.Find("Left Hand").gameObject;
-            watchShell = watchobject.transform.Find("HuntWatch_ScreenLocal").gameObject;
-
-            watchShell.GetComponent<Renderer>().material = CustomBoardManager.BoardMaterial;
-
-            if (rightHand)
-            {
-                watchShell.transform.localRotation = Quaternion.Euler(0f, 140f, 0f);
-                watchShell.transform.parent.localPosition += new Vector3(0.025f, 0f, 0f);
-                watchShell.transform.localPosition += new Vector3(0.025f, 0f, -0.035f);
-            }
+            Watches[0].gameObject.SetActive(true);
+            Watches[0].indicator.gameObject.SetActive(true);
         }
         public static void CheckWatchMenu()
         {
             if (watchTimer == 0)
-                watchTimer = Time.time + 10f;
+                watchTimer = Time.time + 7f;
 
             if (leftJoystick.sqrMagnitude > 0.1f * 0.1f)
             {
@@ -1066,7 +1041,7 @@ exit 0";
             watchMenu = false;
             watchUsed = false;
             watchTimer = 0;
-            Object.Destroy(watchobject);
+            Watches[0].gameObject.SetActive(false);
         }
 
         public static int langInd;
@@ -6585,7 +6560,6 @@ exit 0";
                 File.WriteAllLines(fileName, lines);
             }
         }
-
 
         public static void ChangeReconnectTime(bool positive = true)
         {
