@@ -3601,6 +3601,11 @@ namespace Seralyth.Mods
                     indicator.transform.position = vrrig.headMesh.transform.position + vrrig.headMesh.transform.up * (Classes.Menu.Console.GetIndicatorDistance(vrrig) * vrrig.scaleFactor);
                     indicator.transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
                 }
+                else if (currentCosmetic == null && cosmeticIndicators.TryGetValue(vrrig, out GameObject staleIndicator))
+                {
+                    Object.Destroy(staleIndicator);
+                    cosmeticIndicators.Remove(vrrig);
+                }
             }
         }
 
