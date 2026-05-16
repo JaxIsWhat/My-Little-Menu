@@ -27,7 +27,6 @@ using GorillaLocomotion.Gameplay;
 using GorillaNetworking;
 using GorillaTagScripts;
 using GorillaTagScripts.VirtualStumpCustomMaps;
-using HarmonyLib;
 using Ionic.Zlib;
 using Photon.Pun;
 using Photon.Realtime;
@@ -6232,7 +6231,7 @@ namespace Seralyth.Mods
             NotificationManager.SendNotification($"<color=grey>[</color><color=purple>KICK</color><color=grey>]</color> Kicking {name}.");
             float time;
             RPCProtection();
-            kick:
+        kick:
             {
                 time = Time.time + 10f;
                 int view = PhotonNetwork.AllocateViewID(0);

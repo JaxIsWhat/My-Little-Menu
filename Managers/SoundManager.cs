@@ -324,7 +324,7 @@ namespace Seralyth.Managers
                 return s;
             }
 
-            if (rawPath is int) 
+            if (rawPath is int)
                 return rawPath;
 
             return null;

@@ -20,7 +20,6 @@
  */
 
 // Thanks to kingofnetflix for doing literally everything in this class. I barely even touched it.
-using Modio.Mods;
 using Photon.Pun;
 using Seralyth.Classes.Menu;
 using Seralyth.Menu;

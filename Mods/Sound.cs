@@ -124,7 +124,7 @@ namespace Seralyth.Mods
 
                 string soundKey = "SoundboardSound" + soundName.Hash();
 
-                
+
                 if (!RecorderPatch.enabled || LegacySoundboard)
                 {
                     if (BindMode > 0)
@@ -329,7 +329,7 @@ namespace Seralyth.Mods
             {
                 return Mathf.Round(value / step) * step;
             }
-                
+
 
             playButton = new ButtonInfo
             {
@@ -712,7 +712,7 @@ namespace Seralyth.Mods
                         activeSounds.Clear();
                     }
                     VoiceManager.Get().StopAudioClips();
-                    
+
                     NetworkSystem.Instance.VoiceConnection.PrimaryRecorder.DebugEchoMode = false;
                 }
                 else

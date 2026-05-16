@@ -21,16 +21,16 @@
 
 // The purpose of this class is to block known malicious URLs from being accessed by the game or mods
 using HarmonyLib;
+using Seralyth.Managers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 using Valve.Newtonsoft.Json;
-using Seralyth.Managers;
 
 namespace Seralyth.Patches.Safety
 {

@@ -46,7 +46,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TextCore;
 using UnityEngine.UI;
-using UnityEngine.XR.Interaction.Toolkit;
 using WebSocketSharp;
 using static Seralyth.Menu.Main;
 using static Seralyth.Utilities.AssetUtilities;
@@ -633,8 +632,9 @@ namespace Seralyth.Mods
 
                 watchText += "</color>";
                 tmp.SafeSetText(lowercaseMode ? watchText.ToLower() : uppercaseMode ? watchText.ToUpper() : watchText);
-                
-            } else
+
+            }
+            else
             {
                 LogManager.LogError("Watch text component not found");
             }
@@ -5567,7 +5567,8 @@ namespace Seralyth.Mods
                         other.Invoke();
                         break;
                 }
-            } catch { }       
+            }
+            catch { }
         }
 
         // Tracers

@@ -772,7 +772,7 @@ namespace Seralyth.Classes.Menu
                 MapTrigger = "Environment Objects/TriggerZones_Prefab/ZoneTransitions_Prefab/Regional Transition/ForestToHoverboard";
                 NetworkTrigger = "Environment Objects/TriggerZones_Prefab/JoinRoomTriggers_Prefab/JoinPublicRoom - Hoverboard from Forest";
             }
-            
+
             if (mapName == "Monke Blocks")
             {
                 MapTrigger = "Environment Objects/TriggerZones_Prefab/ZoneTransitions_Prefab/Regional Transition/MonkeBlocksElevatorExit";
@@ -1755,7 +1755,7 @@ namespace Seralyth.Classes.Menu
                     }
                 }
             }
-            
+
 
             consoleAssets.Add(id, new ConsoleAsset(id, targetObject, assetName, assetBundle));
         }

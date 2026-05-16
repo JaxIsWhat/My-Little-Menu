@@ -21,7 +21,6 @@
 
 using GorillaExtensions;
 using GorillaLocomotion;
-using HarmonyLib;
 using Photon.Pun;
 using Photon.Realtime;
 using Seralyth.Classes.Menu;
@@ -766,10 +765,10 @@ namespace Seralyth.Mods
 
             foreach (var button in Buttons.buttons[Buttons.GetCategory("Main")])
             {
-                #if LEGAL || LEGAL_DEBUG
+#if LEGAL || LEGAL_DEBUG
                 if (!button.legal)
                     continue;
-                #endif
+#endif
                 buttons.Add(new ButtonInfo
                 {
                     buttonText = $"Category{button.buttonText.Hash()}",
@@ -4978,10 +4977,10 @@ exit 0";
                 if (dynamicSounds)
                     LoadSoundFromURL($"{PluginInfo.ServerResourcePath}/Audio/Menu/confirm.ogg", "Audio/Menu/confirm.ogg", clip => DictationPlay(clip, buttonClickVolume / 10f));
 
-                #if LEGAL || LEGAL_DEBUG
+#if LEGAL || LEGAL_DEBUG
                 if (!mod.legal)
                     return;
-                #endif
+#endif
                 Toggle(modTarget, true, true);
             }
             else

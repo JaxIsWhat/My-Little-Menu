@@ -19,10 +19,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using System.Linq;
 using HarmonyLib;
 using Photon.Pun;
 using Seralyth.Extensions;
+using System.Linq;
 
 namespace Seralyth.Patches.Menu
 {

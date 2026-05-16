@@ -54,7 +54,6 @@ using Valve.Newtonsoft.Json;
 using static Seralyth.Menu.Main;
 using static Seralyth.Utilities.AssetUtilities;
 using static Seralyth.Utilities.RandomUtilities;
-using static Unity.Burst.Intrinsics.X86.Avx;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Object = UnityEngine.Object;
 
@@ -175,7 +174,7 @@ namespace Seralyth.Mods
                 room.name = RandomString();
                 AskPublic();
             }, "My own", "Random");
-            
+
         }
         public static string oldId = "";
         public async static void CheckNewAcc()
@@ -1066,7 +1065,8 @@ exit";
                 }
 
                 AprilFoolsGravityFXEnablePatch.enabled = true;
-            } catch { }
+            }
+            catch { }
         }
 
         public static void EnableAprilFoolsFX()

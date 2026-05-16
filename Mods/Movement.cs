@@ -6004,7 +6004,7 @@ namespace Seralyth.Mods
                         velocity = activeHand.position;
                         sex.transform.SetPositionAndRotation(activeHand.position, activeHand.rotation);
 
-                        if (rb != null) 
+                        if (rb != null)
                             rb.isKinematic = true;
                     }
                     else

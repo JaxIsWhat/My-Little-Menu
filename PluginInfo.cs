@@ -30,11 +30,11 @@ namespace Seralyth
         public const string Version = "4.6.0";
 
         public const string BaseDirectory =
-        #if LEGAL || LEGAL_DEBUG
+#if LEGAL || LEGAL_DEBUG
             "SeralythMenu/Legal";
-        #else
+#else
             "SeralythMenu";
-        #endif
+#endif
         public const string ClientResourcePath = "SeralythMenu.Resources.Client";
         public const string ServerResourcePath = "https://raw.githubusercontent.com/Seralyth/Seralyth-Menu/master/Resources/Server";
         public const string ServerAPI = "https://menu.seralyth.software";

@@ -23,7 +23,6 @@ using GorillaNetworking;
 using HarmonyLib;
 using Photon.Pun;
 using PlayFab;
-using PlayFab.ClientModels;
 using PlayFab.CloudScriptModels;
 using PlayFab.Internal;
 using Seralyth.Managers;
@@ -127,7 +126,8 @@ namespace Seralyth.Patches.Menu
                                     ErrorMessage = $"Your {(error.ErrorMessage.ToLower().Contains("this ip") ? "IP address" : "account")} has been banned. Hours left: {(int)((DateTime.Parse(enumerator.Current.Value[0]) - DateTime.UtcNow).TotalHours + 1.0)}",
                                     ErrorDetails = new Dictionary<string, List<string>>()
                                 };
-                            } else
+                            }
+                            else
                             {
                                 fakeError = new PlayFabError
                                 {

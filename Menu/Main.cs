@@ -61,7 +61,6 @@ using WebSocketSharp;
 using static Seralyth.Utilities.AssetUtilities;
 using static Seralyth.Utilities.FileUtilities;
 using static Seralyth.Utilities.RandomUtilities;
-using static Unity.Burst.Intrinsics.X86.Avx;
 using ButtonCollider = Seralyth.Classes.Menu.ButtonCollider;
 using CommonUsages = UnityEngine.XR.CommonUsages;
 using Console = Seralyth.Classes.Menu.Console;
@@ -1882,11 +1881,11 @@ namespace Seralyth.Menu
         private static void AddButton(float offset, int buttonIndex, ButtonInfo method)
         {
             bool shouldCreate = false;
-            #if LEGAL || LEGAL_DEBUG
+#if LEGAL || LEGAL_DEBUG
             shouldCreate = method.legal;
-            #else
+#else
             shouldCreate = true;
-            #endif
+#endif
             if (!shouldCreate)
                 return;
             if (method != null && !method.label)
@@ -1976,7 +1975,7 @@ namespace Seralyth.Menu
 
             UpdateButtonText updater = buttonText.gameObject.AddComponent<UpdateButtonText>();
             updater.Init(method, buttonIndex, offset);
-            updater.UpdateText(); 
+            updater.UpdateText();
         }
 
         private static void AddSearchButton()
@@ -2700,16 +2699,16 @@ namespace Seralyth.Menu
                     }
                 }.AddComponent<TextMeshPro>();
                 buildLabel.font = activeFont;
-                
-                #if LEGAL
+
+#if LEGAL
                 buildLabel.text = $"Build {PluginInfo.Version} Legal";
-                #elif DEBUG
+#elif DEBUG
                 buildLabel.text = $"Build {PluginInfo.Version} Debug";
-                #elif LEGAL_DEBUG
+#elif LEGAL_DEBUG
                 buildLabel.text = $"Build {PluginInfo.Version} Legal, Debug";
-                #else
+#else
                 buildLabel.text = $"Build {PluginInfo.Version}";
-                #endif
+#endif
 
                 buildLabel.text = FollowMenuSettings(buildLabel.text);
 
@@ -3016,9 +3015,9 @@ namespace Seralyth.Menu
                                 break;
                         }
 
-                    #if LEGAL || LEGAL_DEBUG
+#if LEGAL || LEGAL_DEBUG
                     renderButtons = renderButtons.Where(b => b.legal || b.label).ToArray();
-                    #endif
+#endif
 
                     if (renderButtons.Length == 0 || (renderButtons.Length == 1 && renderButtons.FirstOrDefault().toolTip.Contains("Returns you back to the")))
                     {
@@ -6687,10 +6686,10 @@ jgs \_   _/ |Oo\
                     }
                 }
 
-                #if LEGAL || LEGAL_DEBUG
+#if LEGAL || LEGAL_DEBUG
                 list = list.Where(b => b.legal || b.label).ToArray();
                 count = list.Length;
-                #endif
+#endif
 
                 if (!isSearching) return count;
                 {

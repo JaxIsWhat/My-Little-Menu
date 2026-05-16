@@ -31,7 +31,6 @@ using GorillaTag.Rendering;
 using GorillaTagScripts;
 using GorillaTagScripts.Builder;
 using Ionic.Zlib;
-using Modio.Mods;
 using Photon.Pun;
 using Photon.Realtime;
 using Photon.Voice;
@@ -1485,7 +1484,7 @@ namespace Seralyth.Mods
             if (!PhotonNetwork.InRoom) return;
             if (Time.time > spamDelay)
             {
-                spamDelay = Time.time + 0.05f;                      
+                spamDelay = Time.time + 0.05f;
                 openOrClose = !openOrClose;
                 PhotonView view = GetObject("Environment Objects/LocalObjects_Prefab/CityToBasement/DungeonEntrance/DungeonDoor_Prefab").GetComponent<PhotonView>();
 
