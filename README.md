@@ -125,7 +125,7 @@ If you wish to support us, here are some of the ways you can!
 > Menu connects to wss://menu.seralyth.software for friend system and administrative purposes.<br>
 > The donate, search, star and speak symbols are provided from [Icons8](https://icons8.com).
 
-> My Little Menu  README.md<br>
+> My Little Menu <br>
 > A community driven mod menu for Gorilla Tag with over 1000+ mods
 >
 > Copyright (C) 2026  Seralyth Software
